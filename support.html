@@ -6,6 +6,7 @@
   <title>Support — GeoWho</title>
   <meta name="description" content="Support and FAQ for GeoWho." />
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/contact-guard.js" defer></script>
 </head>
 <body>
   <header class="top">
@@ -23,10 +24,15 @@
     <p class="meta">GeoWho iOS · English</p>
 
     <h2>Contact</h2>
-    <p>
-      Email:
-      <a href="mailto:geowhoapp@gmail.com">geowhoapp@gmail.com</a>
-    </p>
+    <div data-cg-root data-cg-pending class="cg-block">
+      <p>
+        Email:
+        <a data-cg="email" href="#"></a>
+      </p>
+      <noscript>
+        <p class="cg-noscript">Email: geowhoapp [at] gmail [dot] com</p>
+      </noscript>
+    </div>
 
     <h2>Subscriptions &amp; restore</h2>
     <ul>

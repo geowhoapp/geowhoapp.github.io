@@ -15,11 +15,12 @@ Minimal landing + Privacy + Support + Credits for App Store / RevenueCat URLs.
 Ziel-URLs (Host live 2026-08-19):
 
 - Privacy: `https://geowhoapp.github.io/privacy.html`
+- Impressum: `https://geowhoapp.github.io/impressum.html`
 - Support: `https://geowhoapp.github.io/support.html`
 - Credits: `https://geowhoapp.github.io/credits.html`
 - Start: `https://geowhoapp.github.io/`
 
-Eintragen: RC-Paywall Privacy · ASC App-Informationen Support/Marketing · ASC Listing Privacy. SoT: [`docs/gtm/ECKDATEN.md`](../docs/gtm/ECKDATEN.md). Inhalt (Impressum etc.): Launch-Checkliste Phase 0b.
+Eintragen: RC-Paywall Privacy · ASC App-Informationen Support/Marketing · ASC Listing Privacy. SoT: [`docs/gtm/ECKDATEN.md`](../docs/gtm/ECKDATEN.md). Legal: [`docs/legal/SITE_RECHTSSICHERHEIT.md`](../docs/legal/SITE_RECHTSSICHERHEIT.md) · Abschluss: [`docs/plans/2026-08-19-003-legal-site-portrait-rights-complete.md`](../docs/plans/2026-08-19-003-legal-site-portrait-rights-complete.md).
 
 Apple braucht nur HTTPS + öffentlich erreichbar. `github.io` einer **Org** reicht; Gist / `raw.githubusercontent.com` nicht.
 
@@ -46,8 +47,9 @@ cd site && python3 -m http.server 8080
 - [x] E-Mail (Marke): `geowhoapp@gmail.com` — SoT [`docs/gtm/ECKDATEN.md`](../docs/gtm/ECKDATEN.md)
 - [x] Impressum: Klarname + Adresse + Tel + § 36 VSBG (`impressum.html`)
 - [x] Privacy auf Art.-13-Niveau (`privacy.html`)
+- [x] Kontakt anti-harvest: `js/contact-guard.js` (kein Klartext-Mail/Tel im HTML-Source)
 - [x] Footer-Link **„Impressum“** auf allen Seiten
 - [ ] App-Store-Button-Link wenn die App live ist
 - [x] Org-Pages live (`https://geowhoapp.github.io/`, 2026-08-19)
-- [ ] Nach HTML-Änderung: Inhalt von `site/` nach `geowhoapp/geowhoapp.github.io` pushen
+- [x] Nach HTML-Änderung: Inhalt von `site/` nach `geowhoapp/geowhoapp.github.io` pushen (2026-08-19)
 - [ ] Credits gegen [`docs/legal/ATTRIBUTION.md`](../docs/legal/ATTRIBUTION.md)

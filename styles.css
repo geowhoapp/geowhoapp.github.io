@@ -106,3 +106,24 @@ footer {
   font-size: 0.88rem;
 }
 footer .links { margin: 0.35rem 0; }
+
+/* Contact-guard: obfuscated Klarname/Mail/Tel until JS fills (anti-harvest) */
+.cg-addr { white-space: pre-line; }
+.cg-block[data-cg-pending] > p:first-of-type,
+.cg-inline[data-cg-pending] > a[data-cg] {
+  opacity: 0;
+  pointer-events: none;
+}
+.cg-block[data-cg-pending]::before {
+  content: "Contact details load in your browser…";
+  display: block;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin: 0.35rem 0 0.75rem;
+}
+.cg-inline[data-cg-pending]::before {
+  content: "Contact loads in your browser…";
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.cg-noscript { margin: 0.5rem 0; }

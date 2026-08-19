@@ -6,6 +6,7 @@
   <title>Privacy Policy — GeoWho</title>
   <meta name="description" content="Privacy Policy for the GeoWho iOS app (GDPR Art. 13)." />
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/contact-guard.js" defer></script>
 </head>
 <body>
   <header class="top">
@@ -29,12 +30,21 @@
     </p>
 
     <h2>1. Controller (Verantwortlicher)</h2>
-    <p>
-      Jörg Kosinski<br />
-      Oststr. 3, 04317 Leipzig, Germany<br />
-      Email: <a href="mailto:geowhoapp@gmail.com">geowhoapp@gmail.com</a><br />
-      Phone: <a href="tel:+4915730371690">+49 157 30371690</a>
-    </p>
+    <div data-cg-root data-cg-pending class="cg-block">
+      <p>
+        <span data-cg="name"></span><br />
+        <span data-cg="addr-en"></span><br />
+        Email: <a data-cg="email" href="#"></a><br />
+        Phone: <a data-cg="phone" href="#"></a>
+      </p>
+      <noscript>
+        <p class="cg-noscript">
+          Jörg Kosinski · Oststr. 3 · 04317 Leipzig · Germany<br />
+          Email: geowhoapp [at] gmail [dot] com<br />
+          Phone: +49&nbsp;157&nbsp;3037&nbsp;1690
+        </p>
+      </noscript>
+    </div>
     <p>See also the <a href="impressum.html">Impressum</a>.</p>
 
     <h2>2. What the app stores on your device</h2>
@@ -98,7 +108,10 @@
       <li>lodge a complaint with a supervisory authority (in Germany typically your state data
           protection authority; overview: <a href="https://www.bfdi.bund.de/" rel="noopener">BfDI</a>).</li>
     </ul>
-    <p>Contact: <a href="mailto:geowhoapp@gmail.com">geowhoapp@gmail.com</a>.</p>
+    <p data-cg-root data-cg-pending class="cg-inline">
+      Contact: <a data-cg="email" href="#"></a>.
+      <noscript>Contact: geowhoapp [at] gmail [dot] com.</noscript>
+    </p>
 
     <h2>9. Analytics &amp; advertising</h2>
     <p>

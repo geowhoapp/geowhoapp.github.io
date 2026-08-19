@@ -6,6 +6,7 @@
   <title>Impressum — GeoWho</title>
   <meta name="description" content="Impressum / Anbieterkennzeichnung GeoWho." />
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/contact-guard.js" defer></script>
 </head>
 <body>
   <header class="top">
@@ -23,18 +24,34 @@
     <p class="meta">Angaben gemäß § 5 DDG · English summary below</p>
 
     <h2>Anbieter</h2>
-    <p>
-      Jörg Kosinski<br />
-      Oststr. 3<br />
-      04317 Leipzig<br />
-      Deutschland
-    </p>
+    <div data-cg-root data-cg-pending class="cg-block">
+      <p>
+        <span data-cg="name"></span><br />
+        <span data-cg="addr-de" class="cg-addr"></span>
+      </p>
+      <noscript>
+        <p class="cg-noscript">
+          Jörg Kosinski<br />
+          Oststr. 3<br />
+          04317 Leipzig<br />
+          Deutschland
+        </p>
+      </noscript>
+    </div>
 
     <h2>Kontakt</h2>
-    <p>
-      E-Mail: <a href="mailto:geowhoapp@gmail.com">geowhoapp@gmail.com</a><br />
-      Telefon: <a href="tel:+4915730371690">+49&nbsp;157&nbsp;30371690</a>
-    </p>
+    <div data-cg-root data-cg-pending class="cg-block">
+      <p>
+        E-Mail: <a data-cg="email" href="#"></a><br />
+        Telefon: <a data-cg="phone" href="#"></a>
+      </p>
+      <noscript>
+        <p class="cg-noscript">
+          E-Mail: geowhoapp [at] gmail [dot] com<br />
+          Telefon: +49&nbsp;157&nbsp;3037&nbsp;1690
+        </p>
+      </noscript>
+    </div>
     <p class="tiny">
       Telefonnummer für ASC/DSA und Impressum (Blau Prepaid). Kein 24/7-Support — bitte bevorzugt per E-Mail.
     </p>
@@ -60,13 +77,24 @@
     <hr />
 
     <h2 lang="en">Legal notice (EN)</h2>
-    <p lang="en">
-      Provider: Jörg Kosinski, Oststr. 3, 04317 Leipzig, Germany.
-      Email: <a href="mailto:geowhoapp@gmail.com">geowhoapp@gmail.com</a>.
-      Phone: +49 157 30371690.
-      We are not willing and not obliged to participate in dispute resolution proceedings before a
-      consumer arbitration board (§ 36 VSBG).
-    </p>
+    <div lang="en" data-cg-root data-cg-pending class="cg-block">
+      <p>
+        Provider: <span data-cg="name"></span>, <span data-cg="addr-en"></span>.
+        Email: <a data-cg="email" href="#"></a>.
+        Phone: <span data-cg="phone-plain"></span>.
+        We are not willing and not obliged to participate in dispute resolution proceedings before a
+        consumer arbitration board (§ 36 VSBG).
+      </p>
+      <noscript>
+        <p class="cg-noscript">
+          Provider: Jörg Kosinski, Oststr. 3, 04317 Leipzig, Germany.
+          Email: geowhoapp [at] gmail [dot] com.
+          Phone: +49&nbsp;157&nbsp;3037&nbsp;1690.
+          We are not willing and not obliged to participate in dispute resolution proceedings before a
+          consumer arbitration board (§ 36 VSBG).
+        </p>
+      </noscript>
+    </div>
 
     <p class="tiny">
       Keine Rechtsberatung. Bei Unsicherheit Steuerberater / Fachanwalt IT-Recht.
