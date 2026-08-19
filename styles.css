@@ -109,6 +109,18 @@ footer .links { margin: 0.35rem 0; }
 
 /* Contact-guard: obfuscated Klarname/Mail/Tel until JS fills (anti-harvest) */
 .cg-addr { white-space: pre-line; }
+.cg-at::before { content: "@"; }
+.cg-decoy {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .cg-block[data-cg-pending] > p:first-of-type,
 .cg-inline[data-cg-pending] > a[data-cg] {
   opacity: 0;

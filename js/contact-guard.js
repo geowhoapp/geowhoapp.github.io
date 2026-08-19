@@ -1,31 +1,21 @@
 /**
- * GeoWho contact-guard (2026 practice)
- * ------------------------------------
- * Goal: keep §5 DDG / Art. 13 contact data human-readable after load,
- * while keeping email/phone/address out of static HTML for naive scrapers.
- *
- * Limits (honest):
- * - Does NOT stop headless browsers or determined scrapers.
- * - Does NOT hide Klarname/address from humans (legal visibility required).
- * - Noscript fallback stays deliberately imperfect ([at] / spaced digits).
+ * GeoWho contact-guard
+ * Injects §5 DDG / Art. 13 contact after load. Not real crypto — raises bar for
+ * naive HTML regex harvesters. Headless browsers can still recover the DOM.
  */
 (function () {
   "use strict";
 
   var KEY = 0x5a;
-  // Payload: XOR(UTF-8 JSON, KEY) → base64. Rebuild with node if contact data changes.
   var B64 =
-    "IXg0Ozc/eGB4EJnsKD16ETUpMzQpMTN4dng2MzQ/KXhgAXgVKS4pLih0eml4dnhqbmlrbXoWPzMqIDM9eHZ4Hj8vLik5MjY7ND54B3Z4NjM0Px80eGB4FSkuKS4odHppdnpqbmlrbXoWPzMqIDM9dnodPyg3OzQjeHZ4Pzc7MzYPKT8oeGB4PT81LTI1OyoqeHZ4Pzc7MzYSNSkueGB4PTc7MzZ0OTU3eHZ4KjI1ND8eMykqNjsjeGB4cW5jemtvbXppamlta2xjanh2eCoyNTQ/Dj82eGB4cW5ja29taWppbWtsY2p4Jw==";
+    "IXg0eGB4EJnsKD16ETUpMzQpMTN4dng7eGABeBUpLikuKHR6aXh2eGpuaWttehY/MyogMz14dngePy8uKTkyNjs0PngHdng7P3hgeBUpLikuKHR6aXZ6am5pa216Fj8zKiAzPXZ6HT8oNzs0I3h2eD8veGB4PT81LTI1OyoqeHZ4PzJ4YHg9NzszNnQ5NTd4dngqPnhgeHFuY3prb216aWppbWtsY2p4dngqLnhgeHFuY2tvbWlqaW1rbGNqeCc=";
 
   function bytesToUtf8(bytes) {
     if (typeof TextDecoder !== "undefined") {
       return new TextDecoder("utf-8").decode(bytes);
     }
     var binary = "";
-    for (var i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    // Fallback for very old engines
+    for (var i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
     return decodeURIComponent(escape(binary));
   }
 
@@ -33,61 +23,125 @@
     try {
       var bin = atob(B64);
       var bytes = new Uint8Array(bin.length);
-      for (var i = 0; i < bin.length; i++) {
-        bytes[i] = bin.charCodeAt(i) ^ KEY;
-      }
-      return JSON.parse(bytesToUtf8(bytes));
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i) ^ KEY;
+      var raw = JSON.parse(bytesToUtf8(bytes));
+      return {
+        name: raw.n,
+        lines: raw.a,
+        lineEn: raw.ae,
+        emailUser: raw.eu,
+        emailHost: raw.eh,
+        phoneDisplay: raw.pd,
+        phoneTel: raw.pt
+      };
     } catch (err) {
       return null;
     }
   }
 
-  function text(el, value) {
-    if (el) el.textContent = value;
+  /** Insert ZWSP between chars so naive phone regex on HTML source fails harder. */
+  function softPhone(display) {
+    return display.split("").join("\u200B");
   }
 
-  function mailto(el, user, host) {
+  function fillEmail(el, user, host) {
     if (!el) return;
+    el.textContent = "";
+    el.removeAttribute("href");
+    el.setAttribute("href", "#");
+    el.setAttribute("role", "link");
+    el.dataset.cgReady = "1";
+
+    var u = document.createElement("span");
+    u.textContent = user;
+    var at = document.createElement("span");
+    at.className = "cg-at";
+    at.setAttribute("aria-hidden", "true");
+    var h = document.createElement("span");
+    h.textContent = host;
+    // Decoy (hidden) breaks some textContent email regexes that ignore CSS
+    var decoy = document.createElement("span");
+    decoy.className = "cg-decoy";
+    decoy.textContent = "null";
+    decoy.setAttribute("aria-hidden", "true");
+
+    el.appendChild(u);
+    el.appendChild(decoy);
+    el.appendChild(at);
+    el.appendChild(h);
+
     var addr = user + "@" + host;
-    el.setAttribute("href", "mailto:" + addr);
-    el.textContent = addr;
+    el.setAttribute("aria-label", addr);
+    el.addEventListener(
+      "click",
+      function (ev) {
+        ev.preventDefault();
+        window.location.href = "mailto:" + addr;
+      },
+      { once: false }
+    );
   }
 
-  function tel(el, display, href) {
+  function fillPhone(el, display, telHref) {
     if (!el) return;
-    el.setAttribute("href", "tel:" + href);
-    el.textContent = display;
+    el.textContent = softPhone(display);
+    el.setAttribute("href", "#");
+    el.setAttribute("aria-label", display);
+    el.dataset.cgReady = "1";
+    el.addEventListener(
+      "click",
+      function (ev) {
+        ev.preventDefault();
+        window.location.href = "tel:" + telHref;
+      },
+      { once: false }
+    );
+  }
+
+  function fillPhonePlain(el, display) {
+    if (!el) return;
+    el.textContent = softPhone(display);
   }
 
   function fill(root, data) {
     if (!root || !data) return;
 
     root.querySelectorAll("[data-cg='name']").forEach(function (el) {
-      text(el, data.name);
+      el.textContent = data.name;
     });
     root.querySelectorAll("[data-cg='addr-de']").forEach(function (el) {
-      text(el, data.lines.join("\n"));
+      el.textContent = data.lines.join("\n");
     });
     root.querySelectorAll("[data-cg='addr-en']").forEach(function (el) {
-      text(el, data.lineEn);
-    });
-    root.querySelectorAll("[data-cg='addr-line']").forEach(function (el) {
-      text(el, data.lines[0] + ", " + data.lines[1]);
-    });
-    root.querySelectorAll("[data-cg='country-de']").forEach(function (el) {
-      text(el, data.lines[2] || "Deutschland");
+      el.textContent = data.lineEn;
     });
     root.querySelectorAll("a[data-cg='email']").forEach(function (el) {
-      mailto(el, data.emailUser, data.emailHost);
+      fillEmail(el, data.emailUser, data.emailHost);
     });
     root.querySelectorAll("[data-cg='email-plain']").forEach(function (el) {
-      text(el, data.emailUser + "@" + data.emailHost);
+      // Same split structure without link
+      el.textContent = "";
+      var u = document.createElement("span");
+      u.textContent = data.emailUser;
+      var at = document.createElement("span");
+      at.className = "cg-at";
+      at.setAttribute("aria-hidden", "true");
+      var h = document.createElement("span");
+      h.textContent = data.emailHost;
+      var decoy = document.createElement("span");
+      decoy.className = "cg-decoy";
+      decoy.textContent = "null";
+      decoy.setAttribute("aria-hidden", "true");
+      el.appendChild(u);
+      el.appendChild(decoy);
+      el.appendChild(at);
+      el.appendChild(h);
     });
     root.querySelectorAll("a[data-cg='phone']").forEach(function (el) {
-      tel(el, data.phoneDisplay, data.phoneTel);
+      fillPhone(el, data.phoneDisplay, data.phoneTel);
     });
     root.querySelectorAll("[data-cg='phone-plain']").forEach(function (el) {
-      text(el, data.phoneDisplay);
+      fillPhonePlain(el, data.phoneDisplay);
     });
 
     root.removeAttribute("data-cg-pending");
