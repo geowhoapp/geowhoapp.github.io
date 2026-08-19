@@ -1,7 +1,6 @@
-/* Public client config — no secrets here.
- * After Turnstile widget + Worker deploy, fill apiUrl + turnstileSiteKey
- * (see docs/gtm/CONTACT_ALIAS_FORM.md). */
+/* Public client config — Web3Forms access key is designed for the browser.
+ * Create at https://web3forms.com (inbox = your private forward target).
+ * No Cloudflare account required. */
 window.GEOWHO_CONTACT = {
-  apiUrl: "",
-  turnstileSiteKey: "",
+  web3formsAccessKey: "",
 };

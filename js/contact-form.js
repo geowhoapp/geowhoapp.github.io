@@ -1,6 +1,4 @@
-/**
- * GeoWho contact form — Turnstile + honeypot → Cloudflare Worker.
- */
+/*! GeoWho contact form — Web3Forms + honeypot (no Cloudflare required). */
 (function () {
   "use strict";
 
@@ -22,21 +20,16 @@
 
     var status = document.getElementById("gw-contact-status");
     var submit = form.querySelector('[type="submit"]');
-    var c = cfg();
+    var key = (cfg().web3formsAccessKey || "").trim();
 
-    if (!c.apiUrl || !c.turnstileSiteKey) {
+    if (!key) {
       form.setAttribute("data-gw-disabled", "1");
       if (status) {
-        status.textContent =
-          "Contact form is being connected (Turnstile + API). Meanwhile use the email below once it appears.";
+        status.innerHTML =
+          'Form not connected yet. For legally required contact details see the <a href="impressum.html">Impressum</a>.';
       }
       if (submit) submit.disabled = true;
       return;
-    }
-
-    var mount = document.getElementById("gw-turnstile");
-    if (mount) {
-      mount.setAttribute("data-sitekey", c.turnstileSiteKey);
     }
 
     form.addEventListener("submit", function (ev) {
@@ -44,47 +37,49 @@
       if (status) status.textContent = "Sending…";
       if (submit) submit.disabled = true;
 
-      var tokenInput = form.querySelector('[name="cf-turnstile-response"]');
-      var token = tokenInput ? tokenInput.value : "";
+      var website = (form.elements.namedItem("website") || {}).value || "";
+      if (website) {
+        if (status) status.textContent = "Message sent.";
+        if (submit) submit.disabled = false;
+        form.reset();
+        return;
+      }
 
       var payload = {
-        name: (form.elements.namedItem("name") || {}).value || "",
+        access_key: key,
+        subject: "GeoWho Support",
+        from_name: (form.elements.namedItem("name") || {}).value || "",
         email: (form.elements.namedItem("email") || {}).value || "",
         message: (form.elements.namedItem("message") || {}).value || "",
-        website: (form.elements.namedItem("website") || {}).value || "",
-        turnstileToken: token,
+        botcheck: "",
       };
 
-      fetch(c.apiUrl, {
+      fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
       })
         .then(function (r) {
           return r.json().then(function (j) {
-            return { ok: r.ok && j.ok, j: j };
+            return { ok: r.ok && j.success !== false, j: j };
           });
         })
         .then(function (res) {
           if (res.ok) {
             form.reset();
-            if (window.turnstile && mount) {
-              try {
-                window.turnstile.reset(mount);
-              } catch (e) {}
-            }
             if (status) status.textContent = "Message sent. We’ll reply by email.";
           } else {
             if (status) {
-              status.textContent =
-                "Could not send (" +
-                ((res.j && res.j.error) || "error") +
-                "). Try email instead.";
+              status.innerHTML =
+                'Could not send. Please use the contact details on the <a href="impressum.html">Impressum</a>.';
             }
           }
         })
         .catch(function () {
-          if (status) status.textContent = "Network error. Try email instead.";
+          if (status) {
+            status.innerHTML =
+              'Network error. Please use the <a href="impressum.html">Impressum</a>.';
+          }
         })
         .finally(function () {
           if (submit) submit.disabled = false;
