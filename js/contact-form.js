@@ -26,7 +26,7 @@
       form.setAttribute("data-gw-disabled", "1");
       if (status) {
         status.innerHTML =
-          'Form not connected yet. For legally required contact details see the <a href="impressum.html">Impressum</a>.';
+          'Form needs a free Web3Forms key (one-time setup). Until then, use the <a href="impressum.html">Impressum</a> for required contact details.';
       }
       if (submit) submit.disabled = true;
       return;

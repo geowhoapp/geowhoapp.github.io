@@ -24,27 +24,33 @@
     <h1>Support</h1>
 
     <h2>Contact</h2>
-    <p class="tiny">Use this form for support. Legal provider contact is on the <a href="impressum.html">Impressum</a>.</p>
+    <p class="tiny">
+      Prefer this form. Provider details required by law are on the
+      <a href="impressum.html">Impressum</a> only.
+    </p>
 
     <form id="gw-contact-form" class="gw-form" novalidate>
-      <label>
-        Name
-        <input name="name" type="text" maxlength="120" required autocomplete="name" />
-      </label>
-      <label>
-        Your email
-        <input name="email" type="email" maxlength="200" required autocomplete="email" />
-      </label>
-      <label>
-        Message
-        <textarea name="message" rows="5" maxlength="4000" required></textarea>
-      </label>
-      <label class="gw-hp" aria-hidden="true">
-        Website
-        <input name="website" type="text" tabindex="-1" autocomplete="off" />
-      </label>
-      <button type="submit">Send</button>
-      <p id="gw-contact-status" class="tiny" role="status" aria-live="polite"></p>
+      <div class="gw-field">
+        <label for="gw-name">Name</label>
+        <input id="gw-name" name="name" type="text" maxlength="120" required autocomplete="name" />
+      </div>
+      <div class="gw-field">
+        <label for="gw-email">Your email</label>
+        <input id="gw-email" name="email" type="email" maxlength="200" required autocomplete="email" />
+      </div>
+      <div class="gw-field">
+        <label for="gw-message">Message</label>
+        <textarea id="gw-message" name="message" rows="6" maxlength="4000" required></textarea>
+      </div>
+      <!-- Honeypot: must stay invisible; bots that fill it are ignored -->
+      <div class="gw-hp" aria-hidden="true">
+        <label for="gw-website">Company website</label>
+        <input id="gw-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <div class="gw-actions">
+        <button type="submit">Send message</button>
+      </div>
+      <p id="gw-contact-status" class="gw-status" role="status" aria-live="polite"></p>
     </form>
 
     <h2>Subscriptions</h2>
