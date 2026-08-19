@@ -6,7 +6,10 @@
   <title>Support — GeoWho</title>
   <meta name="description" content="Support contact for GeoWho." />
   <link rel="stylesheet" href="styles.css" />
+  <script src="js/site-config.js" defer></script>
   <script src="js/contact-guard.js" defer></script>
+  <script src="js/contact-form.js" defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
   <header class="top">
@@ -22,10 +25,35 @@
   <main class="prose">
     <h1>Support</h1>
 
-    <h2>Contact</h2>
+    <h2>Contact form</h2>
+    <p class="tiny">Protected with Cloudflare Turnstile. Prefer this over email when possible.</p>
+
+    <form id="gw-contact-form" class="gw-form" novalidate>
+      <label>
+        Name
+        <input name="name" type="text" maxlength="120" required autocomplete="name" />
+      </label>
+      <label>
+        Your email
+        <input name="email" type="email" maxlength="200" required autocomplete="email" />
+      </label>
+      <label>
+        Message
+        <textarea name="message" rows="5" maxlength="4000" required></textarea>
+      </label>
+      <!-- honeypot -->
+      <label class="gw-hp" aria-hidden="true">
+        Website
+        <input name="website" type="text" tabindex="-1" autocomplete="off" />
+      </label>
+      <div id="gw-turnstile" class="cf-turnstile" data-theme="dark"></div>
+      <button type="submit">Send</button>
+      <p id="gw-contact-status" class="tiny" role="status" aria-live="polite"></p>
+    </form>
+
+    <h2>Email</h2>
     <div data-cg-root data-cg-pending class="cg-block">
       <p>
-        Email:
         <a data-cg="email" href="#" rel="nofollow"></a>
       </p>
       <noscript>
