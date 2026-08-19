@@ -242,6 +242,10 @@ footer .links { margin: 0.35rem 0; }
 .prose .gw-form .gw-status a {
   color: #b8d0f0;
 }
+.prose .gw-form .gw-captcha {
+  margin: 0.25rem 0 0.15rem;
+  min-height: 78px;
+}
 /* Visually hidden honeypot — not display:none (some bots skip those) */
 .prose .gw-form .gw-hp {
   position: absolute !important;

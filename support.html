@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
   <script src="js/site-config.js" defer></script>
   <script src="js/contact-form.js" defer></script>
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </head>
 <body>
   <header class="top">
@@ -51,6 +52,14 @@
       <div class="gw-hp" aria-hidden="true">
         <label for="gw-website">Company website</label>
         <input id="gw-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+      </div>
+      <!-- Web3Forms free hCaptcha sitekey (enable hCaptcha in Web3Forms dashboard) -->
+      <div class="gw-captcha">
+        <div
+          class="h-captcha"
+          data-sitekey="50b2fe65-b00b-4b9e-ad62-3ba471098be2"
+          data-theme="light"
+        ></div>
       </div>
       <div class="gw-actions">
         <button type="submit">Send message</button>

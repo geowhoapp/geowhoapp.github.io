@@ -1,6 +1,18 @@
-/*! GeoWho contact form — Web3Forms + honeypot (no Cloudflare required). */
+/*! GeoWho contact form — Web3Forms + anti-spam layers (no Cloudflare required).
+ *
+ * 2026 practice for a static Pages form (Free Web3Forms):
+ * 1) Key obfuscated in source (anti-scrape; NOT a secret — still visible after decode / Network)
+ * 2) Honeypot field
+ * 3) Minimum dwell time before accept
+ * 4) hCaptcha (Web3Forms free sitekey) — enable “hCaptcha” in the Web3Forms dashboard
+ *
+ * Domain allowlist = Pro. Turnstile via CF Worker = optional later (contact-worker/).
+ */
 (function () {
   "use strict";
+
+  var XOR_KEY = 0x5a;
+  var MIN_DWELL_MS = 2800;
 
   function cfg() {
     return window.GEOWHO_CONTACT || {};
@@ -14,13 +26,36 @@
     }
   }
 
+  function decodeAccessKey(b64) {
+    if (!b64 || typeof atob !== "function") return "";
+    try {
+      var bin = atob(b64);
+      var bytes = new Uint8Array(bin.length);
+      for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i) ^ XOR_KEY;
+      var raw =
+        typeof TextDecoder !== "undefined"
+          ? new TextDecoder("utf-8").decode(bytes)
+          : decodeURIComponent(escape(String.fromCharCode.apply(null, bytes)));
+      var parsed = JSON.parse(raw);
+      return String(parsed.k || "").trim();
+    } catch (err) {
+      return "";
+    }
+  }
+
+  function hCaptchaToken(form) {
+    var el = form.querySelector('textarea[name="h-captcha-response"]');
+    return el && el.value ? String(el.value).trim() : "";
+  }
+
   ready(function () {
     var form = document.getElementById("gw-contact-form");
     if (!form) return;
 
     var status = document.getElementById("gw-contact-status");
     var submit = form.querySelector('[type="submit"]');
-    var key = (cfg().web3formsAccessKey || "").trim();
+    var openedAt = Date.now();
+    var key = decodeAccessKey((cfg().web3formsAccessKeyB64 || "").trim());
 
     if (!key) {
       form.setAttribute("data-gw-disabled", "1");
@@ -42,6 +77,24 @@
         if (status) status.textContent = "Message sent.";
         if (submit) submit.disabled = false;
         form.reset();
+        if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
+          try {
+            window.hcaptcha.reset();
+          } catch (e) {}
+        }
+        return;
+      }
+
+      if (Date.now() - openedAt < MIN_DWELL_MS) {
+        if (status) status.textContent = "Please wait a moment, then try again.";
+        if (submit) submit.disabled = false;
+        return;
+      }
+
+      var captcha = hCaptchaToken(form);
+      if (!captcha) {
+        if (status) status.textContent = "Please complete the captcha.";
+        if (submit) submit.disabled = false;
         return;
       }
 
@@ -52,6 +105,7 @@
         email: (form.elements.namedItem("email") || {}).value || "",
         message: (form.elements.namedItem("message") || {}).value || "",
         botcheck: "",
+        "h-captcha-response": captcha,
       };
 
       fetch("https://api.web3forms.com/submit", {
@@ -67,6 +121,11 @@
         .then(function (res) {
           if (res.ok) {
             form.reset();
+            if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
+              try {
+                window.hcaptcha.reset();
+              } catch (e) {}
+            }
             if (status) status.textContent = "Message sent. We’ll reply by email.";
           } else {
             if (status) {
