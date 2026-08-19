@@ -1,12 +1,7 @@
-/*! GeoWho contact form — Web3Forms + anti-spam layers (no Cloudflare required).
+/*! GeoWho contact form — Web3Forms + anti-spam (no Cloudflare required).
  *
- * 2026 practice for a static Pages form (Free Web3Forms):
- * 1) Key obfuscated in source (anti-scrape; NOT a secret — still visible after decode / Network)
- * 2) Honeypot field
- * 3) Minimum dwell time before accept
- * 4) hCaptcha (Web3Forms free sitekey) — enable “hCaptcha” in the Web3Forms dashboard
- *
- * Domain allowlist = Pro. Turnstile via CF Worker = optional later (contact-worker/).
+ * Payload follows Web3Forms JS guide: JSON with field `name` (not from_name),
+ * plus h-captcha-response. Access key is XOR-decoded from site-config.
  */
 (function () {
   "use strict";
@@ -48,6 +43,25 @@
     return el && el.value ? String(el.value).trim() : "";
   }
 
+  function resetCaptcha() {
+    if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
+      try {
+        window.hcaptcha.reset();
+      } catch (e) {}
+    }
+  }
+
+  function showError(status, msg) {
+    if (!status) return;
+    var safe = String(msg || "Could not send.");
+    status.textContent = "";
+    status.appendChild(document.createTextNode(safe + " "));
+    var a = document.createElement("a");
+    a.href = "impressum.html";
+    a.textContent = "Impressum";
+    status.appendChild(a);
+  }
+
   ready(function () {
     var form = document.getElementById("gw-contact-form");
     if (!form) return;
@@ -60,8 +74,8 @@
     if (!key) {
       form.setAttribute("data-gw-disabled", "1");
       if (status) {
-        status.innerHTML =
-          'Form needs a free Web3Forms key (one-time setup). Until then, use the <a href="impressum.html">Impressum</a> for required contact details.';
+        status.textContent =
+          "Form needs a free Web3Forms key (one-time setup). Until then, use the Impressum for required contact details.";
       }
       if (submit) submit.disabled = true;
       return;
@@ -77,11 +91,7 @@
         if (status) status.textContent = "Message sent.";
         if (submit) submit.disabled = false;
         form.reset();
-        if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
-          try {
-            window.hcaptcha.reset();
-          } catch (e) {}
-        }
+        resetCaptcha();
         return;
       }
 
@@ -98,10 +108,11 @@
         return;
       }
 
+      /* Web3Forms requires standard field names: name, email, message */
       var payload = {
         access_key: key,
         subject: "GeoWho Support",
-        from_name: (form.elements.namedItem("name") || {}).value || "",
+        name: (form.elements.namedItem("name") || {}).value || "",
         email: (form.elements.namedItem("email") || {}).value || "",
         message: (form.elements.namedItem("message") || {}).value || "",
         botcheck: "",
@@ -115,30 +126,26 @@
       })
         .then(function (r) {
           return r.json().then(function (j) {
-            return { ok: r.ok && j.success !== false, j: j };
+            return { httpOk: r.ok, status: r.status, j: j };
           });
         })
         .then(function (res) {
-          if (res.ok) {
+          if (res.httpOk && res.j && res.j.success === true) {
             form.reset();
-            if (window.hcaptcha && typeof window.hcaptcha.reset === "function") {
-              try {
-                window.hcaptcha.reset();
-              } catch (e) {}
-            }
-            if (status) status.textContent = "Message sent. We’ll reply by email.";
-          } else {
+            resetCaptcha();
             if (status) {
-              status.innerHTML =
-                'Could not send. Please use the contact details on the <a href="impressum.html">Impressum</a>.';
+              status.textContent =
+                "Message sent. Check inbox and Spam/Promotions for mail from web3forms.com.";
             }
+            return;
           }
+          var apiMsg =
+            (res.j && (res.j.message || res.j.error)) ||
+            "Send failed (HTTP " + res.status + ").";
+          showError(status, apiMsg);
         })
         .catch(function () {
-          if (status) {
-            status.innerHTML =
-              'Network error. Please use the <a href="impressum.html">Impressum</a>.';
-          }
+          showError(status, "Network error.");
         })
         .finally(function () {
           if (submit) submit.disabled = false;
