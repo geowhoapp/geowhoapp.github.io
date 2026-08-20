@@ -32,11 +32,14 @@
       var daily = params.get('daily');
       var run = params.get('run');
       var figure = params.get('figure');
+      var exhibit = params.get('exhibit') || params.get('pack');
       var el = document.getElementById('msg');
       if (daily && /^\d{4}-\d{2}-\d{2}$/.test(daily)) {
         el.textContent = 'Today’s GeoWho · ' + daily + ' — open the app to play the daily challenge.';
       } else if (run) {
         el.textContent = 'Beat my run — open GeoWho to play the same five figures.';
+      } else if (exhibit && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(exhibit)) {
+        el.textContent = 'Free Exhibit — a five-chapter story challenge. Open GeoWho to begin.';
       } else if (figure && /^Q[0-9]+$/.test(figure)) {
         el.textContent = 'A friend challenged you — open GeoWho to guess who from the map.';
       }
