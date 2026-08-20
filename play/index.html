@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GeoWho — Challenge</title>
-  <meta name="description" content="Open this figure challenge in GeoWho." />
+  <meta name="description" content="Open this GeoWho challenge in the app." />
   <style>
     :root { color-scheme: dark; }
     body {
@@ -28,10 +28,17 @@
   </main>
   <script>
     (function () {
-      var q = new URLSearchParams(location.search).get('figure');
-      if (q && /^Q[0-9]+$/.test(q)) {
-        document.getElementById('msg').textContent =
-          'Challenge figure ' + q + ' — open GeoWho to play this person.';
+      var params = new URLSearchParams(location.search);
+      var daily = params.get('daily');
+      var run = params.get('run');
+      var figure = params.get('figure');
+      var el = document.getElementById('msg');
+      if (daily && /^\d{4}-\d{2}-\d{2}$/.test(daily)) {
+        el.textContent = 'Today’s GeoWho · ' + daily + ' — open the app to play the daily challenge.';
+      } else if (run) {
+        el.textContent = 'Beat my run — open GeoWho to play the same five figures.';
+      } else if (figure && /^Q[0-9]+$/.test(figure)) {
+        el.textContent = 'A friend challenged you — open GeoWho to guess who from the map.';
       }
     })();
   </script>
