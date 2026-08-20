@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TDKY9KGCG2.com.geowho.app",
+        "paths": ["/play", "/play/*"]
+      }
+    ]
+  }
+}
